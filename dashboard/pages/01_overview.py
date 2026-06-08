@@ -8,6 +8,8 @@ import numpy as np
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "components"))
+from results import load_results
 
 st.set_page_config(page_title="Vue d'ensemble", page_icon="📊", layout="wide")
 st.title("📊 Vue d'ensemble du Système")
@@ -64,16 +66,10 @@ st.markdown("---")
 # Model results summary
 st.subheader("Résumé des Performances des Modèles")
 
-results_data = {
-    "Modèle": ["Rég. Logistique", "Arbre de Décision", "Random Forest",
-                "XGBoost", "LightGBM", "MLP", "Auto-encodeur", "Stacking (proposé)"],
-    "AUC-ROC": [0.974, 0.917, 0.976, 0.981, 0.979, 0.968, 0.952, 0.987],
-    "F1-Score": [0.72, 0.72, 0.85, 0.88, 0.86, 0.81, 0.78, 0.90],
-    "Précision": [0.87, 0.73, 0.93, 0.95, 0.94, 0.89, 0.85, 0.96],
-    "Rappel": [0.62, 0.71, 0.78, 0.82, 0.80, 0.74, 0.72, 0.85],
-}
-
-df_results = pd.DataFrame(results_data)
+df_results, _is_real = load_results()
+if not _is_real:
+    st.caption("⚠️ Modèle non entraîné — valeurs de repli. Lancez "
+               "`python scripts/train_model.py` pour des chiffres réels.")
 
 # Highlight best
 st.dataframe(

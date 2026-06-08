@@ -93,4 +93,4 @@ Déploiement:          Flask API + Streamlit Dashboard
 """)
 
 st.markdown("---")
-st.caption("Promotion 2024/2025")
+st.caption("Promotion 2025/2026")

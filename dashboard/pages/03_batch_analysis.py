@@ -34,10 +34,18 @@ if uploaded_file is not None:
             # Try to load model, fallback to demo mode
             try:
                 import joblib
-                from config import MODELS_DIR
+                from config import MODELS_DIR, KAGGLE_ALL_FEATURES
                 model = joblib.load(os.path.join(MODELS_DIR, "stacking_ensemble.pkl"))
-                feature_cols = [c for c in df.columns if c not in ["Class", "isFraud"]]
-                probas = model.predict_proba(df[feature_cols])[:, 1]
+                # Réordonner les colonnes comme à l'entraînement (V1..V28, Amount, Time)
+                if set(KAGGLE_ALL_FEATURES).issubset(df.columns):
+                    X = df[KAGGLE_ALL_FEATURES].values
+                else:
+                    X = df[[c for c in df.columns if c not in ["Class", "isFraud"]]].values
+                # Appliquer le même scaler qu'à l'entraînement (sinon prédictions faussées)
+                scaler_path = os.path.join(MODELS_DIR, "scaler.pkl")
+                if os.path.exists(scaler_path):
+                    X = joblib.load(scaler_path).transform(X)
+                probas = model.predict_proba(X)[:, 1]
             except Exception:
                 probas = np.random.beta(1, 20, size=len(df))
                 st.warning("Mode démonstration — scores simulés")

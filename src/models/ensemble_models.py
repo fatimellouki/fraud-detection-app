@@ -3,7 +3,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-from catboost import CatBoostClassifier
 
 from config import (
     RANDOM_FOREST_PARAMS, XGBOOST_PARAMS,
@@ -53,8 +52,11 @@ def create_lightgbm(**kwargs) -> LGBMClassifier:
     return LGBMClassifier(**params)
 
 
-def create_catboost(**kwargs) -> CatBoostClassifier:
+def create_catboost(**kwargs):
     """Create a CatBoost classifier.
+
+    CatBoost is imported lazily so the rest of the model stack remains usable
+    even when the optional ``catboost`` package is not installed.
 
     Args:
         **kwargs: Override default hyperparameters.
@@ -62,5 +64,6 @@ def create_catboost(**kwargs) -> CatBoostClassifier:
     Returns:
         Configured CatBoostClassifier instance.
     """
+    from catboost import CatBoostClassifier
     params = {**CATBOOST_PARAMS, **kwargs}
     return CatBoostClassifier(**params)

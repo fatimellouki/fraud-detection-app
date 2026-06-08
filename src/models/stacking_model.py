@@ -31,7 +31,7 @@ class FraudStackingEnsemble:
 
     def __init__(self, rf_params: dict = None, xgb_params: dict = None,
                  lgbm_params: dict = None, meta_params: dict = None,
-                 cv_folds: int = CV_FOLDS):
+                 cv_folds: int = CV_FOLDS, passthrough: bool = True):
         """Configure the stacking architecture.
 
         Args:
@@ -40,12 +40,18 @@ class FraudStackingEnsemble:
             lgbm_params: Override LightGBM hyperparameters.
             meta_params: Override meta-learner hyperparameters.
             cv_folds: Number of folds for generating level-0 predictions.
+            passthrough: If True, the meta-learner also receives the original
+                features in addition to the base predictions (passthrough
+                stacking). This lets the meta-learner recover signal the base
+                learners may have smoothed out and, empirically on this dataset,
+                lifts the ensemble above the best individual base learner.
         """
         self.rf_params = rf_params or {}
         self.xgb_params = xgb_params or {}
         self.lgbm_params = lgbm_params or {}
         self.meta_params = meta_params or STACKING_META_PARAMS
         self.cv_folds = cv_folds
+        self.passthrough = passthrough
         self.model = None
         self._build()
 
@@ -67,7 +73,7 @@ class FraudStackingEnsemble:
             cv=StratifiedKFold(n_splits=self.cv_folds, shuffle=True,
                                random_state=RANDOM_STATE),
             stack_method="predict_proba",
-            passthrough=False,
+            passthrough=self.passthrough,
             n_jobs=-1,
         )
 

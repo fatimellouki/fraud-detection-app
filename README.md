@@ -49,6 +49,18 @@ Il explique en français le rôle de chaque module, l'ordre conseillé pour lire
 1. **Kaggle Credit Card**: [Télécharger](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) → `data/raw/creditcard.csv`
 2. **PaySim**: [Télécharger](https://www.kaggle.com/datasets/ealaxi/paysim1) → `data/raw/paysim.csv`
 
+### Entraîner le modèle (génère le modèle réel)
+
+```bash
+python scripts/train_model.py        # ~5-8 min
+```
+
+Produit `models/stacking_ensemble.pkl`, `models/scaler.pkl`, les résultats réels
+(`models/*.csv`) et des exemples de démonstration. Le dashboard et l'API chargent
+automatiquement ce modèle ; sans lui, ils basculent en mode démonstration
+(clairement signalé à l'écran). Voir **[`DEMONSTRATION.md`](DEMONSTRATION.md)** pour
+le déroulé complet de la démonstration.
+
 ### Utilisation
 
 **Notebooks** (dans l'ordre):
@@ -84,24 +96,37 @@ pytest tests/ -v
 │   ├── explainability/     # SHAP, LIME, importance des features
 │   └── api/                # API Flask REST
 ├── dashboard/              # Interface Streamlit (6 pages)
+├── scripts/                # train_model.py (entraînement) + download_data.py
 ├── notebooks/              # 11 notebooks d'analyse
-├── rapport/                # Mémoire (~85 pages, français)
-│   ├── chapitres/          # 9 chapitres + pages préliminaires
-│   ├── diagrams/           # 10 diagrammes Mermaid
-│   └── bibliographie/      # 45 références IEEE
-├── tests/                  # Suite de tests pytest
-└── reports/figures/        # Figures générées (EDA, modèles, XAI)
+├── tests/                  # Suite de tests pytest (40 tests)
+├── models/                 # Résultats (.csv) + modèles entraînés (.pkl, non versionnés)
+├── reports/figures/        # Figures générées (EDA, modèles, XAI)
+├── DEMONSTRATION.md        # Guide pas à pas de la démonstration (soutenance)
+├── GUIDE_CODE_COMPLET.md   # Explication détaillée de chaque segment de code
+└── ANNEXE_TECHNIQUE_GUIDE_CODE.md  # Guide de lecture conceptuel du code
 ```
 
 ### Résultats
 
-| Modèle | AUC-ROC | F1-Score | Temps (ms) |
-|---|---|---|---|
-| Rég. Logistique | 0.974 | 0.72 | 0.8 |
-| Random Forest | 0.976 | 0.85 | 2.1 |
-| XGBoost | 0.981 | 0.88 | 1.5 |
-| LightGBM | 0.979 | 0.86 | 1.2 |
-| **Stacking (proposé)** | **0.987** | **0.90** | 5.8 |
+Chiffres **réels**, mesurés sur le jeu de test (jamais vu), générés par
+`python scripts/train_model.py`. Méthodologie : découpage train/validation/test
+disjoints, rééquilibrage SMOTE sur l'entraînement, seuil de décision optimisé sur
+la validation. Le **stacking obtient la meilleure AUC-ROC**.
+
+| Modèle | AUC-ROC | AUPRC | F1-Score | Précision | Rappel | Temps (ms) |
+|---|---|---|---|---|---|---|
+| Rég. Logistique | 0.9747 | 0.7245 | 0.7885 | 0.7455 | 0.8367 | 0.05 |
+| Arbre de Décision | 0.8538 | 0.5026 | 0.7222 | 0.6610 | 0.7959 | 0.04 |
+| Random Forest | 0.9849 | 0.8781 | 0.8442 | 0.8317 | 0.8571 | 14.5 |
+| XGBoost | 0.9811 | 0.8785 | 0.8817 | 0.9318 | 0.8367 | 0.22 |
+| LightGBM | 0.9812 | 0.8765 | 0.8571 | 0.9740 | 0.7653 | 0.29 |
+| MLP | 0.9752 | 0.8458 | 0.7940 | 0.7822 | 0.8061 | 0.06 |
+| Auto-encodeur | 0.9616 | 0.2170 | 0.3063 | 0.2207 | 0.5000 | 0.06 |
+| **Stacking (proposé)** | **0.9863** | 0.8435 | 0.8216 | 0.8736 | 0.7755 | 15.2 |
+
+> Le stacking maximise l'AUC-ROC (0,9863), la métrique de discrimination globale.
+> Les modèles de base restent compétitifs sur d'autres métriques (p. ex. XGBoost
+> sur le F1, Random Forest sur le rappel), ce qui est attendu.
 
 ### Technologies
 

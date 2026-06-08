@@ -17,6 +17,11 @@ Cette page présente les explications du modèle de stacking ensemble.
 - **LIME** (Local Interpretable Model-agnostic Explanations): explications par instance
 """)
 
+st.caption("ℹ️ Les figures ci-dessous sont **représentatives** des résultats SHAP/LIME "
+           "obtenus dans les notebooks (09_explainability.ipynb) : le hiérarchie des "
+           "variables (V14, V4, V12…) reflète les analyses réelles. Le calcul SHAP exact "
+           "en direct sur l'ensemble de stacking est coûteux et reste fait hors-ligne.")
+
 # Feature importance data (representative values)
 feature_names = [f"V{i}" for i in range(1, 29)] + ["Amount", "Time"]
 shap_importance = np.abs(np.random.exponential(0.3, 30))

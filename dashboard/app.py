@@ -53,7 +53,7 @@ with st.sidebar:
     avec explicabilité (SHAP + LIME)
     """)
     st.markdown("---")
-    st.caption("Mémoire de Master — 2024/2025")
+    st.caption("Mémoire de Master — 2025/2026")
 
 # Main content
 st.markdown('<p class="main-header">🔍 Détection Intelligente des Transactions Frauduleuses</p>',

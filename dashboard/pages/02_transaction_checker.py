@@ -37,11 +37,38 @@ with col1:
 
     input_mode = st.radio(
         "Mode de saisie",
-        ["Exemple aléatoire", "Saisie manuelle"],
+        ["Exemple réel (jeu de test)", "Exemple aléatoire", "Saisie manuelle"],
         horizontal=True
     )
 
-    if input_mode == "Exemple aléatoire":
+    true_label = None
+    if input_mode == "Exemple réel (jeu de test)":
+        import pandas as pd
+        from config import KAGGLE_ALL_FEATURES, MODELS_DIR
+        samples_path = os.path.join(os.path.dirname(MODELS_DIR),
+                                    "data", "samples", "demo_transactions.csv")
+        if os.path.exists(samples_path):
+            samples = pd.read_csv(samples_path)
+            options = [
+                f"Transaction #{i} — {'FRAUDE réelle' if int(c) == 1 else 'légitime réelle'}"
+                for i, c in enumerate(samples["Class"])
+            ]
+            choice = st.selectbox("Choisir une transaction réelle du jeu de test",
+                                  options)
+            ridx = options.index(choice)
+            features = samples.loc[ridx, KAGGLE_ALL_FEATURES].astype(float).tolist()
+            true_label = int(samples.loc[ridx, "Class"])
+            st.caption(f"Vérité terrain de cette transaction : "
+                       f"**{'FRAUDE' if true_label == 1 else 'LÉGITIME'}** "
+                       "(on vérifie que le modèle retrouve la bonne réponse).")
+            with st.expander("Voir les 30 caractéristiques"):
+                st.json({KAGGLE_ALL_FEATURES[i]: round(float(v), 4)
+                         for i, v in enumerate(features)})
+        else:
+            st.warning("Aucun exemple réel disponible — lancez d'abord "
+                       "`python scripts/train_model.py`.")
+            features = np.zeros(30).tolist()
+    elif input_mode == "Exemple aléatoire":
         np.random.seed(st.number_input("Seed", 0, 1000, 42))
         features = np.random.randn(30).tolist()
         st.json({f"V{i+1}" if i < 28 else ["Amount", "Time"][i-28]: round(v, 4)
@@ -106,8 +133,22 @@ with col2:
         else:
             st.success(f"✅ **TRANSACTION LÉGITIME** — Probabilité de fraude: {fraud_prob:.1%}")
 
-        # Simulated SHAP explanation
-        st.subheader("Explication (Top Features)")
+        # Confrontation à la vérité terrain (mode « exemple réel »)
+        if true_label is not None:
+            predicted = int(fraud_prob >= 0.5)
+            if predicted == true_label:
+                st.success(f"✔️ Prédiction correcte : le modèle retrouve la "
+                           f"vraie étiquette ({'fraude' if true_label else 'légitime'}).")
+            else:
+                st.warning(f"❗ Le modèle s'est trompé sur cet exemple "
+                           f"(vérité : {'fraude' if true_label else 'légitime'}).")
+
+        # Explication locale — illustration pédagogique de la méthode SHAP.
+        # NB : le calcul SHAP exact sur un ensemble de stacking est coûteux ;
+        # cette page illustre la LECTURE d'une explication (cf. page Explicabilité).
+        st.subheader("Explication locale (illustration de la méthode SHAP)")
+        st.caption("Illustration du principe SHAP (contribution par variable). "
+                   "Les importances globales réelles figurent sur la page « Explicabilité ».")
         feature_names = [f"V{i+1}" for i in range(28)] + ["Amount", "Time"]
         importance = np.abs(np.random.randn(30))
         importance = importance / importance.sum()

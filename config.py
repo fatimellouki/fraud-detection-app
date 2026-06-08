@@ -67,7 +67,6 @@ XGBOOST_PARAMS = {
     "max_depth": 6,
     "learning_rate": 0.1,
     "eval_metric": "auc",
-    "use_label_encoder": False,
     "random_state": RANDOM_STATE,
 }
 
