@@ -58,8 +58,7 @@ python scripts/train_model.py        # ~5-8 min
 Produit `models/stacking_ensemble.pkl`, `models/scaler.pkl`, les résultats réels
 (`models/*.csv`) et des exemples de démonstration. Le dashboard et l'API chargent
 automatiquement ce modèle ; sans lui, ils basculent en mode démonstration
-(clairement signalé à l'écran). Voir **[`DEMONSTRATION.md`](DEMONSTRATION.md)** pour
-le déroulé complet de la démonstration.
+(clairement signalé à l'écran).
 
 ### Utilisation
 
@@ -101,9 +100,7 @@ pytest tests/ -v
 ├── tests/                  # Suite de tests pytest (40 tests)
 ├── models/                 # Résultats (.csv) + modèles entraînés (.pkl, non versionnés)
 ├── reports/figures/        # Figures générées (EDA, modèles, XAI)
-├── DEMONSTRATION.md        # Guide pas à pas de la démonstration (soutenance)
-├── GUIDE_CODE_COMPLET.md   # Explication détaillée de chaque segment de code
-└── ANNEXE_TECHNIQUE_GUIDE_CODE.md  # Guide de lecture conceptuel du code
+└── ANNEXE_TECHNIQUE_GUIDE_CODE.md  # Guide de lecture du code
 ```
 
 ### Résultats
