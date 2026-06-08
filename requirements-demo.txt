@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dépendances FIGÉES pour la DÉMONSTRATION (dashboard + API).
+#
+# Ces versions correspondent EXACTEMENT au modèle livré
+# (models/stacking_ensemble.pkl). Les garder identiques garantit que le modèle
+# se charge sans avertissement de version.
+#
+# Python 3.11 recommandé (3.10–3.12 acceptés).
+# Installation :  pip install -r requirements-demo.txt
+#
+# Ce fichier est volontairement plus léger que requirements.txt : il ne contient
+# PAS TensorFlow / CatBoost / Optuna / SHAP / LIME, inutiles pour la démo en
+# direct (le dashboard fonctionne sans). Pour ré-entraîner ou ouvrir les
+# notebooks, utiliser requirements.txt complet.
+# ─────────────────────────────────────────────────────────────────────────────
+numpy==2.2.6
+scipy==1.17.1
+pandas==3.0.3
+scikit-learn==1.9.0
+xgboost==3.2.0
+lightgbm==4.6.0
+joblib==1.5.3
+plotly==6.8.0
+streamlit==1.58.0
+flask==3.1.3
+flask-cors==6.0.4

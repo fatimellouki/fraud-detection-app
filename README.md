@@ -18,23 +18,28 @@ Explicabilité:        SHAP + LIME ── Explications
 Déploiement:          Flask API + Streamlit Dashboard
 ```
 
-### Démarrage rapide (2 commandes)
+### Démarrage immédiat — le modèle est inclus ✅
+
+Le modèle entraîné est **versionné dans le dépôt** (`models/stacking_ensemble.pkl`
++ `models/scaler.pkl`) : l'application fonctionne **dès le clone**, sans
+télécharger le jeu de données ni ré-entraîner.
 
 ```bash
-./install.sh   # installe Python venv, dépendances, datasets
+python3.11 -m venv .venv
+source .venv/bin/activate            # Windows : .\.venv\Scripts\Activate.ps1
+pip install -r requirements-demo.txt # dépendances allégées (Python 3.10–3.12)
+streamlit run dashboard/app.py       # → http://localhost:8501  (prédictions réelles)
+```
+
+### Alternative (script interactif)
+
+```bash
+./install.sh   # installe Python venv + dépendances complètes
 ./run.sh       # menu interactif : dashboard, API, tests, notebooks
 ```
 
-> Si les datasets Kaggle ne se téléchargent pas automatiquement, `install.sh`
-> affiche les liens à utiliser pour les placer manuellement dans `data/raw/`.
-
-### Installation manuelle (alternative)
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+> `requirements-demo.txt` suffit pour la **démo** (dashboard + API). Pour
+> ré-entraîner ou ouvrir les notebooks, utiliser `requirements.txt` complet.
 
 ### Guide pratique pour le tuteur
 
